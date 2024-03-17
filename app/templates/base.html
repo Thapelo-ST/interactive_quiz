@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head> 
+        <meta charset="utf-8" />
+        <title> {% block title %} Home page layout {% endblock %}</title>
+        <link rel="icon" type="image/fav-icon" href="images/1fae1.png">
+        <link rel="stylesheet" href="{{ url_for('templates', filename='/css/static1.css') }}">
+        {% block head %} 
+
+        {%  endblock %}
+	</head>
+
+<!--body starts here-->
+    <body>
+        {% block body %} 
+        
+        {%  endblock %}
+    </body>
+<!--body ends here-->
+
+    <footer>
+        {% block footer %} 
+            Interactive Quiz, ©2024 , All rights reserved. 
+        {%  endblock %}
+    </footer>
+</html>
