@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head> 
+        <meta charset="utf-8" />
+        <title> {% block title %} Interactive Quiz | Default {% endblock %}</title>
+        <link rel="icon" type="image/fav-icon" href="/static/images/ideas.png">
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+        {% block head %} 
+
+        {%  endblock %}
+	</head>
+
+    <!--body starts here-->
+    <body>
+        <nav class="navbar">
+            <div class="navbar-continer">
+                <!--<div class="navbar_logo">
+                    <a href="/"><img src="/static/images/ideas.png" alt="IQ"></a>
+                <div>-->
+                <ul class="navbar-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/quiz">Take Quiz</a></li>
+                    <li><a href="/admin">Admin Panel</a></li>
+                    <!-- Add more menu items as needed -->
+                </ul>
+            </div>
+        </nav>
+
+        <div class="content">
+            {% block body %} 
+
+            {%  endblock %}
+        </div>
+
+        <!--body ends here-->
+
+        <footer>
+            {% block footer %} 
+                Interactive Quiz, ©2024 , All rights reserved. 
+            {%  endblock %}
+        </footer>
+    </body>
+</html>
