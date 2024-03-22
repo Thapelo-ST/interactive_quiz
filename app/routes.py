@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, redirect, url_for, flash
-from app.auth import login_required
+from app.auth_app.auth import login_required
 from app.models import User
 
 # Create a blueprint for authentication routes
