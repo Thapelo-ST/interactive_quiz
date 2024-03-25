@@ -2,7 +2,7 @@ import os
 import bcrypt
 from uuid import uuid4
 from flask import request
-from app.models import User
+from app.users import User
 from app.db import DB
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
@@ -60,7 +60,7 @@ class Auth:
             user = self._db.find_user_by(email=email)
             raise ValueError("User {} already exists".format(email))
         except NoResultFound:
-            return self._db.add_user(email=email, hashed_password=hashed_password)
+            return self._db.add_user(email=email, hashed_password=hashed_password, user_type=user.user_type)
 
     def valid_login(self, email: str, password: str) -> bool:
         """Logs in an existing user and returns a User object if successful."""
