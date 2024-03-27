@@ -10,6 +10,8 @@ from sqlalchemy.exc import InvalidRequestError
 class Auth:
     """Manages API authentication"""
 
+    def __init__(self, db):
+        self._db = db
     def require_auth(self, path: str, excluded_paths: list) -> bool:
         """Returns false paths and executed paths"""
         if not path or not excluded_paths:
@@ -119,3 +121,6 @@ class Auth:
         """Hashes the provided password using bcrypt"""
         salt = bcrypt.gensalt()
         return bcrypt.hashpw(password.encode(), salt)
+
+db_instance = DB()
+AUTH = Auth(db_instance)

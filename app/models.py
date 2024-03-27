@@ -1,5 +1,6 @@
 import hashlib
 from datetime import datetime
+from sqlalchemy import MetaData
 from typing import TypeVar, List, Iterable
 from sqlalchemy import Column, Integer, String
 from os import path
@@ -8,6 +9,7 @@ import uuid
 
 TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S"
 DATA = {}
+metadata = MetaData()
 
 
 class Base():
@@ -134,3 +136,4 @@ class Base():
         
         return list(filter(_search, DATA[s_class].values()))
 
+Base.metadata = metadata

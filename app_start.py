@@ -1,12 +1,15 @@
 """
 flask app
 """
+from curses import flash
 from flask import Flask, Response, abort, jsonify, make_response, render_template, request, redirect
 from app.auth.auth import Auth
+from app.db import DB
 
 
 app = Flask(__name__, template_folder="app/templates")
-AUTH = Auth()
+db_instance = DB()
+AUTH = Auth(db_instance)
 
 
 @app.route('/', methods=['GET'], strict_slashes=False)
@@ -37,22 +40,28 @@ def users() -> jsonify:
 def register_user_test():
     return render_template("register.html")
 
-@app.route('/registers', methods=["GET", "POST"])
+@app.route('/user_reg', methods=["GET", "POST"])
 def register_user():
-    email = request.form.get("email")
-    password = request.form.get("password")
-    user_type = request.form.get("user_type")  # Add a form field for user type in the registration form
-
-    # Check if the user type is valid
-    if user_type not in ['admin', 'client']:
-        return jsonify({"error": "Invalid user type"}), 400
-
-    # Register the user
-    try:
-        user = AUTH.register_user(email, password, user_type)
-        return jsonify({"email": email, "user_type": user_type, "message": "User registered"}), 200
-    except ValueError as e:
+    if request.method == "GET":
         return render_template("register.html")
+    elif request.method == "POST":
+        email = request.form.get("email")
+        password = request.form.get("password")
+        user_type = request.form.get("user_type")  # Add a form field for user type in the registration form
+
+        # Check if the user type is valid
+        if user_type not in ['admin', 'client']:
+            return jsonify({"error": "Invalid user type"}), 400
+
+        # Register the user
+        try:
+            user = AUTH.register_user(email, password)
+            user.save_user_type(user_type)
+            return jsonify({"email": email, "user_type": user_type, "message": "User registered"}), 200
+        except ValueError as e:
+            return jsonify({"error": "User not registerd"}), 405
+    else:
+        return jsonify({"error": "Method Not Allowed"}), 405
 
 #@app.route('/sessions', methods=['POST'])
 #def loginSession() -> Response:
