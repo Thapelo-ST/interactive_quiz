@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %} Create Quiz {% endblock %}
+
+{% block head %}
+    <!-- Additional CSS styles specific to create_quiz.html can be added here -->
+    <link rel="stylesheet" type="text/css" href="/static/css/create_quiz.css">
+{% endblock %}
+
+{% block body %}
+    <h1>Create Quiz</h1>
+    <form id="create-quiz-form">
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title"><br><br>
+
+        <label for="description">Description:</label><br>
+        <textarea id="description" name="description"></textarea><br><br>
+
+        <label for="time-limit">Time Limit (minutes):</label><br>
+        <input type="number" id="time-limit" name="time_limit" min="1"><br><br>
+
+        <div id="questions-container">
+            <!-- JavaScript will dynamically add question fields here -->
+        </div>
+
+        <button type="button" id="add-question-btn">Add Question</button><br><br>
+
+        <button type="submit">Create Quiz</button>
+    </form>
+
+    <!-- JavaScript code for adding question fields dynamically -->
+    <script>
+        document.getElementById('add-question-btn').addEventListener('click', function() {
+            var questionsContainer = document.getElementById('questions-container');
+
+            var questionDiv = document.createElement('div');
+            questionDiv.innerHTML = `
+                <label for="question">Question:</label><br>
+                <input type="text" name="questions[]" required><br><br>
+
+                <label for="option1">Option 1:</label>
+                <input type="text" name="options[]" required>
+                <input type="radio" name="correct_answer[${i}]" value="0"><br>
+
+                <label for="option2">Option 2:</label>
+                <input type="text" name="options[]" required>
+                <input type="radio" name="correct_answer[${i}]" value="1"><br>
+
+                <!-- Add more options and radio buttons as needed -->
+                <br><br>
+            `;
+            questionsContainer.appendChild(questionDiv);
+        });
+    </script>
+{% endblock %}
+
+{% block footer %} 
+    Interactive Quiz, ©2024 , All rights reserved. 
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %} Registration - Interactive Quiz {% endblock %}
+{% block head %}
+    <style>
+        /* Center the content */
+        body {
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Increase text size */
+        h2 {
+            font-size: 50px;
+        }
+
+        /* Adjust input size */
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            box-sizing: border-box;
+        }
+
+        /* Center-align the button */
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            box-sizing: border-box;
+        }
+    </style>
+{% endblock %}
+{% block body %} 
+<h2>Register</h2>
+<form action="/user_reg" method = "POST">
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required><br>
+    <label for="password">Password:</label>
+    <input type="password" id="password" name="password" required><br>
+    <label for="user_type">User Type:</label>
+    <select id="user_type" name="user_type">
+        <option value="admin">Admin</option>
+        <option value="client">Client</option>
+    </select><br>
+    <button type="submit">Register</button>
+</form>
+{% endblock %}
+{% block footer %} 
+    <!-- Footer content for the registration page -->
+{% endblock %}
+{% block hide_admin_link %}True{% endblock %}

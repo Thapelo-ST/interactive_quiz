@@ -1,139 +1,66 @@
-import hashlib
-from datetime import datetime
-from sqlalchemy import MetaData
-from typing import TypeVar, List, Iterable
-from sqlalchemy import Column, Integer, String
-from os import path
-import json
-import uuid
+from sqlalchemy import Column, DateTime, Integer, String, ForeignKey
+from sqlalchemy import Enum
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
 
-TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%S"
-DATA = {}
-metadata = MetaData()
+Base = declarative_base()
 
+class UserEnum(Enum):
+    ADMIN = 'admin'
+    CLIENT = 'client'
 
-class Base():
-    """ Base class
-    """
+class User(Base):
+    __tablename__ = 'users'
 
-    def __init__(self, *args: list, **kwargs: dict):
-        """ Initialize a Base instance
-        """
-        s_class = str(self.__class__.__name__)
-        if DATA.get(s_class) is None:
-            DATA[s_class] = {}
+    id = Column(Integer, primary_key=True)
+    email = Column(String, unique=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+    first_name = Column(String, nullable=True)
+    last_name = Column(String, nullable=True)
+    role = Column(Enum(UserEnum.ADMIN, UserEnum.CLIENT), nullable=False, default=UserEnum.CLIENT)
 
-        self.id = kwargs.get('id', str(uuid.uuid4()))
-        if kwargs.get('created_at') is not None:
-            self.created_at = datetime.strptime(kwargs.get('created_at'),
-                                                TIMESTAMP_FORMAT)
-        else:
-            self.created_at = datetime.utcnow()
-        if kwargs.get('updated_at') is not None:
-            self.updated_at = datetime.strptime(kwargs.get('updated_at'),
-                                                TIMESTAMP_FORMAT)
-        else:
-            self.updated_at = datetime.utcnow()
+class Quiz(Base):
+    __tablename__ = 'quizzes'
 
-    def __eq__(self, other: TypeVar('Base')) -> bool: # type: ignore
-        """ Equality
-        """
-        if type(self) != type(other):
-            return False
-        if not isinstance(self, Base):
-            return False
-        return (self.id == other.id)
+    id = Column(Integer, primary_key=True)
+    title = Column(String, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship("User", back_populates="quizzes")
+    time_limit = Column(Integer)
+    questions = relationship("Question", back_populates="quiz")
+    attempts = relationship('QuizAttempt', back_populates='quiz')
 
-    def to_json(self, for_serialization: bool = False) -> dict:
-        """ Convert the object a JSON dictionary
-        """
-        result = {}
-        for key, value in self.__dict__.items():
-            if not for_serialization and key[0] == '_':
-                continue
-            if type(value) is datetime:
-                result[key] = value.strftime(TIMESTAMP_FORMAT)
-            else:
-                result[key] = value
-        return result
+class Question(Base):
+    __tablename__ = 'questions'
 
-    @classmethod
-    def load_from_file(cls):
-        """ Load all objects from file
-        """
-        s_class = cls.__name__
-        file_path = ".db_{}.json".format(s_class)
-        DATA[s_class] = {}
-        if not path.exists(file_path):
-            return
+    id = Column(Integer, primary_key=True)
+    text = Column(String, nullable=False)
+    quiz_id = Column(Integer, ForeignKey('quizzes.id'))
+    quiz = relationship("Quiz", back_populates="questions")
+    options = relationship("Option", back_populates="question")
 
-        with open(file_path, 'r') as f:
-            objs_json = json.load(f)
-            for obj_id, obj_json in objs_json.items():
-                DATA[s_class][obj_id] = cls(**obj_json)
+class Option(Base):
+    __tablename__ = 'options'
 
-    @classmethod
-    def save_to_file(cls):
-        """ Save all objects to file
-        """
-        s_class = cls.__name__
-        file_path = ".db_{}.json".format(s_class)
-        objs_json = {}
-        for obj_id, obj in DATA[s_class].items():
-            objs_json[obj_id] = obj.to_json(True)
+    id = Column(Integer, primary_key=True)
+    text = Column(String, nullable=False)
+    is_correct = Column(Integer, nullable=False)
+    question_id = Column(Integer, ForeignKey('questions.id'))
+    question = relationship("Question", back_populates="options")
 
-        with open(file_path, 'w') as f:
-            json.dump(objs_json, f)
+class QuizAttempt(Base):
+    __tablename__ = 'quiz_attempts'
 
-    def save(self):
-        """ Save current object
-        """
-        s_class = self.__class__.__name__
-        self.updated_at = datetime.utcnow()
-        DATA[s_class][self.id] = self
-        self.__class__.save_to_file()
+    id = Column(Integer, primary_key=True)
+    quiz_id = Column(Integer, ForeignKey('quizzes.id'))
+    user_id = Column(Integer, ForeignKey('users.id'))
+    score = Column(Integer)
+    start_time = Column(DateTime)
+    end_time = Column(DateTime)
+    user = relationship("User", back_populates="quiz_attempts")
+    quiz = relationship("Quiz", back_populates="quiz_attempts")
 
-    def remove(self):
-        """ Remove object
-        """
-        s_class = self.__class__.__name__
-        if DATA[s_class].get(self.id) is not None:
-            del DATA[s_class][self.id]
-            self.__class__.save_to_file()
-
-    @classmethod
-    def count(cls) -> int:
-        """ Count all objects
-        """
-        s_class = cls.__name__
-        return len(DATA[s_class].keys())
-
-    @classmethod
-    def all(cls) -> Iterable[TypeVar('Base')]: # type: ignore 
-        """ Return all objects
-        """
-        return cls.search()
-
-    @classmethod
-    def get(cls, id: str) -> TypeVar('Base'): # type: ignore
-        """ Return one object by ID
-        """
-        s_class = cls.__name__
-        return DATA[s_class].get(id)
-
-    @classmethod
-    def search(cls, attributes: dict = {}) -> List[TypeVar('Base')]: # type: ignore
-        """ Search all objects with matching attributes
-        """
-        s_class = cls.__name__
-        def _search(obj):
-            if len(attributes) == 0:
-                return True
-            for k, v in attributes.items():
-                if (getattr(obj, k) != v):
-                    return False
-            return True
-        
-        return list(filter(_search, DATA[s_class].values()))
-
-Base.metadata = metadata
+User.quizzes = relationship("Quiz", order_by=Quiz.id, back_populates="user")
+Quiz.user_attempts = relationship("QuizAttempt", order_by=QuizAttempt.id, back_populates="quiz")
+User.quiz_attempts = relationship("QuizAttempt", order_by=QuizAttempt.id, back_populates="user")
+Question.options = relationship("Option", order_by=Option.id, back_populates="question")

@@ -2,7 +2,7 @@
 
 from app.db import DB
 from app.models import Base
-from app.users import User
+from app.user.users import User
 
 def setup_admin():
     db = DB()
