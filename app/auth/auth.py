@@ -109,6 +109,6 @@ class Auth:
         salt = bcrypt.gensalt()
         return bcrypt.hashpw(password.encode(), salt)
 
-db_instance = DB("sqlite:///database.db")
+db_instance = DB("sqlite:////database.db")
 AUTH = Auth(db_instance)
 # if there is a circular imports error fix here

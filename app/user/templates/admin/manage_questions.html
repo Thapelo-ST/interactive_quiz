@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Manage Questions - Interactive Quiz
+{% endblock %}
+
+{% block body %}
+    <h1>Manage Questions</h1>
+    <!-- Add content for managing questions -->
+    <form action="/manage_questions" method="POST">
+        <h2>Question 1</h2>
+        <label for="question_text1">Question:</label><br>
+        <input type="text" id="question_text1" name="question_text"><br>
+
+        <label for="option1_1">Option 1:</label><br>
+        <input type="text" id="option1_1" name="option1"><br>
+
+        <label for="option2_1">Option 2:</label><br>
+        <input type="text" id="option2_1" name="option2"><br>
+
+        <!-- Add more options as needed -->
+
+        <button type="button" onclick="addOption(1)">Add Option</button><br><br>
+
+        <!-- Add more questions as needed -->
+        
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <script>
+        function addOption(questionNumber) {
+            var questionDiv = document.getElementById("question_" + questionNumber);
+
+            var optionCount = questionDiv.querySelectorAll("input[name^='option']").length;
+
+            var label = document.createElement("label");
+            label.textContent = "Option " + (optionCount + 1) + ":";
+            questionDiv.appendChild(label);
+            questionDiv.appendChild(document.createElement("br"));
+
+            var input = document.createElement("input");
+            input.type = "text";
+            input.name = "option" + (optionCount + 1);
+            questionDiv.appendChild(input);
+            questionDiv.appendChild(document.createElement("br"));
+        }
+    </script>
+{% endblock %}

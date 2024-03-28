@@ -1,12 +1,12 @@
 from flask import Blueprint, jsonify, request, abort
 from app.db import DB
-from app.models import Quiz
+from app.models import Quiz as quiZ
 
 # Create a Blueprint for quiz routes
 quiz_bp = Blueprint('quiz_bp', __name__)
 
 # Initialize the database
-db = DB("sqlite:///path/to/database.db")
+db = DB("sqlite:////database.db")
 
 @quiz_bp.route('/quizzes', methods=['POST'])
 def create_quiz():
@@ -18,7 +18,7 @@ def create_quiz():
         abort(400, 'Incomplete data')
 
     # Create quiz object
-    quiz = Quiz(title=data['title'], user_id=data['user_id'], time_limit=data['time_limit'])
+    quiz = quiZ(title=data['title'], user_id=data['user_id'], time_limit=data['time_limit'])
 
     # Add quiz to database
     db.db_session.add(quiz)
@@ -29,7 +29,7 @@ def create_quiz():
 @quiz_bp.route('/quizzes/<int:quiz_id>', methods=['GET'])
 def get_quiz(quiz_id):
     """Retrieve a quiz by ID."""
-    quiz = db.db_session.query(Quiz).filter_by(id=quiz_id).first()
+    quiz = db.db_session.query(quiZ).filter_by(id=quiz_id).first()
     if not quiz:
         abort(404, 'Quiz not found')
 
@@ -50,7 +50,7 @@ def update_quiz(quiz_id):
     data = request.json
 
     # Get the quiz from the database
-    quiz = db.db_session.query(Quiz).filter_by(id=quiz_id).first()
+    quiz = db.db_session.query(quiZ).filter_by(id=quiz_id).first()
     if not quiz:
         abort(404, 'Quiz not found')
 
@@ -67,7 +67,7 @@ def update_quiz(quiz_id):
 def delete_quiz(quiz_id):
     """Delete a quiz by ID."""
     # Get the quiz from the database
-    quiz = db.db_session.query(Quiz).filter_by(id=quiz_id).first()
+    quiz = db.db_session.query(quiZ).filter_by(id=quiz_id).first()
     if not quiz:
         abort(404, 'Quiz not found')
 

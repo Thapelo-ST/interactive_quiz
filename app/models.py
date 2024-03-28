@@ -29,6 +29,8 @@ class Quiz(Base):
     time_limit = Column(Integer)
     questions = relationship("Question", back_populates="quiz")
     attempts = relationship('QuizAttempt', back_populates='quiz')
+    # user_attempts = relationship("QuizAttempt", order_by=QuizAttempt.id, back_populates="quiz")
+
 
 class Question(Base):
     __tablename__ = 'questions'
@@ -48,6 +50,7 @@ class Option(Base):
     question_id = Column(Integer, ForeignKey('questions.id'))
     question = relationship("Question", back_populates="options")
 
+
 class QuizAttempt(Base):
     __tablename__ = 'quiz_attempts'
 
@@ -58,9 +61,13 @@ class QuizAttempt(Base):
     start_time = Column(DateTime)
     end_time = Column(DateTime)
     user = relationship("User", back_populates="quiz_attempts")
-    quiz = relationship("Quiz", back_populates="quiz_attempts")
+    quiz = relationship("Quiz", back_populates="attempts")
+    # quiz_attempts = relationship("Quiz", back_populates="user_attempts")
+
+
 
 User.quizzes = relationship("Quiz", order_by=Quiz.id, back_populates="user")
-Quiz.user_attempts = relationship("QuizAttempt", order_by=QuizAttempt.id, back_populates="quiz")
-User.quiz_attempts = relationship("QuizAttempt", order_by=QuizAttempt.id, back_populates="user")
+Quiz.user_attempts = relationship("QuizAttempt", order_by=QuizAttempt.id, back_populates="quiz", overlaps="attempts")
+# User.quiz_attempts = relationship("QuizAttempt", order_by=QuizAttempt.id, back_populates="user")
+User.quiz_attempts = relationship("QuizAttempt", order_by=QuizAttempt.id, back_populates="user", overlaps="user_attempts")
 Question.options = relationship("Option", order_by=Option.id, back_populates="question")

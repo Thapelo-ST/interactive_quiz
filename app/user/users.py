@@ -9,7 +9,7 @@ class UserEnum(Enum):
     ADMIN = 'admin'
     CLIENT = 'client'
 
-class User(Base):
+class UserModel(Base):
     """ User class
     """
     __tablename__ = 'users'

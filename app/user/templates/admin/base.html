@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head> 
+        <meta charset="utf-8" />
+        <title> {% block title %} Interactive Quiz {% endblock %}</title>
+        <link rel="x-icon" type="image/fav-icon" href="/static/images/ideas.png">
+        <!-- CSS styles -->
+        <style>
+            /* Navbar styles */
+            .navbar {
+                background-color: #333;
+                color: #fff;
+                padding: 10px 0;
+                height:70px;
+                width:100%;
+            }
+
+            .navbar-container {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 20px;
+            }
+
+            .navbar-menu {
+                list-style-type: none;
+                display: flex;
+            }
+
+            .navbar-menu li {
+                margin-right: 20px;
+            }
+
+            .navbar-menu li a {
+                color: #fff;
+                text-decoration: none;
+                font-size: large;
+            }
+
+            /* Footer styles */
+            footer {
+                background-color: #333;
+                color: #fff;
+                text-align: center;
+                padding: 10px 0;
+                position: fixed;
+                bottom: 0;
+                width: 99%;
+            }
+
+            .footer-content {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+        </style>
+        {% block head %}
+        {%  endblock %}
+	</head>
+
+    <!--body starts here-->
+    <body>
+        <nav class="navbar">
+            <div class="navbar-continer">
+                <!--<div class="navbar_logo">
+                    <a href="/"><img src="/static/images/ideas.png" alt="IQ"></a>
+                <div>-->
+                <ul class="navbar-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/quiz">Take Quiz</a></li>
+                    {% if not hide_admin_link %}
+                    <li><a href="/admin">Admin Panel</a></li>
+                    {% endif %}
+                    <!-- Add more menu items as needed -->
+                </ul>
+            </div>
+        </nav>
+
+        <div class="content">
+            {% block body %} 
+
+            {%  endblock %}
+        </div>
+
+        <!--body ends here-->
+
+        <footer>
+            {% block footer %} 
+                Interactive Quiz, ©2024 , All rights reserved. 
+            {%  endblock %}
+        </footer>
+    </body>
+</html>

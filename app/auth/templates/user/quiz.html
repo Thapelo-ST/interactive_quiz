@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Take Quiz - Interactive Quiz
+{% endblock %}
+
+{% block body %}
+    <h2>Take Quiz</h2>
+    <form action="/submit_quiz" method="POST">
+        {% for question in questions %}
+            <h3>{{ question.text }}</h3>
+            <ul>
+                {% for option in question.options %}
+                    <li>
+                        <input type="radio" name="{{ question.id }}" value="{{ option.id }}">
+                        <label for="{{ option.id }}">{{ option.text }}</label>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}

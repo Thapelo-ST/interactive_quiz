@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Upload Quiz - Interactive Quiz
+{% endblock %}
+
+{% block body %}
+    <h1>Upload Quiz</h1>
+    <!-- Add form for uploading a quiz -->
+    <form action="/upload_quiz" method="POST">
+        <label for="quiz_title">Quiz Title:</label><br>
+        <input type="text" id="quiz_title" name="quiz_title"><br>
+
+        <label for="quiz_time_limit">Time Limit (minutes):</label><br>
+        <input type="number" id="quiz_time_limit" name="quiz_time_limit" min="1"><br>
+
+        <!-- Add input fields for questions and options -->
+        <h2>Questions</h2>
+        <div id="questions">
+            <div class="question">
+                <label for="question_text1">Question:</label><br>
+                <input type="text" id="question_text1" name="question_text[]"><br>
+
+                <label for="option1_1">Option 1:</label><br>
+                <input type="text" id="option1_1" name="option1[]"><br>
+
+                <label for="option2_1">Option 2:</label><br>
+                <input type="text" id="option2_1" name="option2[]"><br>
+
+                <!-- Add more options as needed -->
+
+                <button type="button" onclick="addOption(1)">Add Option</button><br><br>
+            </div>
+        </div>
+
+        <button type="button" onclick="addQuestion()">Add Question</button><br><br>
+
+        <button type="submit">Upload Quiz</button>
+    </form>
+
+    <script>
+        function addQuestion() {
+            var questionsDiv = document.getElementById("questions");
+
+            var questionDiv = document.createElement("div");
+            questionDiv.className = "question";
+
+            var questionCount = questionsDiv.querySelectorAll(".question").length + 1;
+            var questionLabel = document.createElement("h3");
+            questionLabel.textContent = "Question " + questionCount;
+            questionDiv.appendChild(questionLabel);
+
+            var label = document.createElement("label");
+            label.textContent = "Question:";
+            questionDiv.appendChild(label);
+            questionDiv.appendChild(document.createElement("br"));
+
+            var input = document.createElement("input");
+            input.type = "text";
+            input.name = "question_text[]";
+            questionDiv.appendChild(input);
+            questionDiv.appendChild(document.createElement("br"));
+
+            // Add input fields for options
+            for (var i = 1; i <= 2; i++) {
+                var optionLabel = document.createElement("label");
+                optionLabel.textContent = "Option " + i + ":";
+                questionDiv.appendChild(optionLabel);
+                questionDiv.appendChild(document.createElement("br"));
+
+                var optionInput = document.createElement("input");
+                optionInput.type = "text";
+                optionInput.name = "option" + i + "[]";
+                questionDiv.appendChild(optionInput);
+                questionDiv.appendChild(document.createElement("br"));
+            }
+
+            // Add button to add more options dynamically
+            var addOptionButton = document.createElement("button");
+            addOptionButton.type = "button";
+            addOptionButton.textContent = "Add Option";
+            addOptionButton.onclick = function() { addOption(questionCount); };
+            questionDiv.appendChild(addOptionButton);
+            questionDiv.appendChild(document.createElement("br"));
+            questionDiv.appendChild(document.createElement("br"));
+
+            questionsDiv.appendChild(questionDiv);
+        }
+
+        function addOption(questionNumber) {
+            var questionDiv = document.querySelector(".question:nth-child(" + questionNumber + ")");
+
+            var optionCount = questionDiv.querySelectorAll("input[name^='option']").length;
+
+            var label = document.createElement("label");
+            label.textContent = "Option " + (optionCount + 1) + ":";
+            questionDiv.appendChild(label);
+            questionDiv.appendChild(document.createElement("br"));
+
+            var input = document.createElement("input");
+            input.type = "text";
+            input.name = "option" + (optionCount + 1) + "[]";
+            questionDiv.appendChild(input);
+            questionDiv.appendChild(document.createElement("br"));
+        }
+    </script>
+{% endblock %}

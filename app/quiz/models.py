@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from app.models import Base
 
-class Quiz(Base):
+class QuizModel(Base):
     """Model for storing quizzes"""
     __tablename__ = 'quizzes'
     __table_args__ = {'extend_existing': True} 
@@ -14,7 +14,7 @@ class Quiz(Base):
     questions = relationship('Question', back_populates='quiz')
     attempts = relationship('QuizAttempt', back_populates='quiz')
 
-class Question(Base):
+class QuestionModel(Base):
     """Model for storing questions"""
     __tablename__ = 'questions'
     __table_args__ = {'extend_existing': True} 
@@ -25,7 +25,7 @@ class Question(Base):
     quiz = relationship('Quiz', back_populates='questions')
     options = relationship('Option', back_populates='question')
 
-class Option(Base):
+class OptionModel(Base):
     """Model for storing options for multiple-choice questions"""
     __tablename__ = 'options'
     __table_args__ = {'extend_existing': True} 
@@ -36,7 +36,7 @@ class Option(Base):
     question_id = Column(Integer, ForeignKey('questions.id'))
     question = relationship('Question', back_populates='options')
 
-class QuizAttempt(Base):
+class QuizAttemptModel(Base):
     """Model for storing quiz attempts"""
     __tablename__ = 'quiz_attempts'
     __table_args__ = {'extend_existing': True} 

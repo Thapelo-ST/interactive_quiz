@@ -1,8 +1,8 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from app.models import Base
-from app.quiz.models import Option, Question, Quiz, QuizAttempt
-from app.user.users import User
+from app.quiz.models import OptionModel, QuestionModel, QuizModel, QuizAttemptModel
+from app.user.users import UserModel
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.exc import InvalidRequestError
 
@@ -24,17 +24,17 @@ class DB:
 
     def create_all(self):
         """Create all tables"""
-        User.metadata.create_all(self.engine)
-        Question.metadata.create_all(self.engine)
-        Option.metadata.create_all(self.engine)
-        QuizAttempt.metadata.create_all(self.engine)
-        Quiz.metadata.create_all(self.engine) 
+        UserModel.metadata.create_all(self.engine)
+        QuestionModel.metadata.create_all(self.engine)
+        OptionModel.metadata.create_all(self.engine)
+        QuizAttemptModel.metadata.create_all(self.engine)
+        QuizModel.metadata.create_all(self.engine) 
 
     # USERS 
     def add_user(self, email, hashed_password):
         """Add a new user to the database"""
         session = self.Session()
-        new_user = User(email=email, hashed_password=hashed_password)
+        new_user = UserModel(email=email, hashed_password=hashed_password)
         session.add(new_user)
         session.commit()
         session.close()
@@ -44,7 +44,7 @@ class DB:
         """Find a user by email"""
         session = self.Session()
         try:
-            user = session.query(User).filter_by(email=email).one()
+            user = session.query(UserModel).filter_by(email=email).one()
         except NoResultFound:
             user = None
         session.close()
@@ -54,7 +54,7 @@ class DB:
         """Update user attributes"""
         session = self.Session()
         try:
-            user = session.query(User).filter_by(id=user_id).one()
+            user = session.query(UserModel).filter_by(id=user_id).one()
             for key, value in kwargs.items():
                 setattr(user, key, value)
             session.commit()
@@ -69,7 +69,7 @@ class DB:
         """Delete a user from the database by user ID"""
         session = self.Session()
         try:
-            user = session.query(User).filter_by(id=user_id).one()
+            user = session.query(UserModel).filter_by(id=user_id).one()
             session.delete(user)
             session.commit()
         except NoResultFound:
@@ -81,7 +81,7 @@ class DB:
         """Change user's password"""
         session = self.Session()
         try:
-            user = session.query(User).filter_by(id=user_id).one()
+            user = session.query(UserModel).filter_by(id=user_id).one()
             user.password = new_password
             session.commit()
         except NoResultFound:
@@ -93,7 +93,7 @@ class DB:
         """Retrieve a user from the database by user ID"""
         session = self.Session()
         try:
-            user = session.query(User).filter_by(id=user_id).one()
+            user = session.query(UserModel).filter_by(id=user_id).one()
             return user
         except NoResultFound:
             raise NoResultFound(f"No user found with id {user_id}")
@@ -104,7 +104,7 @@ class DB:
         """Retrieve all users from the database"""
         session = self.Session()
         try:
-            users = session.query(User).all()
+            users = session.query(UserModel).all()
             return users
         finally:
             session.close()
@@ -114,7 +114,7 @@ class DB:
         """Create a new quiz in the database"""
         session = self.Session()
         try:
-            new_quiz = Quiz(**quiz_data)
+            new_quiz = QuizModel(**quiz_data)
             session.add(new_quiz)
             session.commit()
             return new_quiz
@@ -125,7 +125,7 @@ class DB:
         """Update an existing quiz in the database"""
         session = self.Session()
         try:
-            quiz = session.query(Quiz).filter_by(id=quiz_id).one()
+            quiz = session.query(QuizModel).filter_by(id=quiz_id).one()
             for key, value in quiz_data.items():
                 setattr(quiz, key, value)
             session.commit()
@@ -138,7 +138,7 @@ class DB:
         """Delete a quiz from the database"""
         session = self.Session()
         try:
-            quiz = session.query(Quiz).filter_by(id=quiz_id).one()
+            quiz = session.query(QuizModel).filter_by(id=quiz_id).one()
             session.delete(quiz)
             session.commit()
         except NoResultFound:
@@ -150,7 +150,7 @@ class DB:
         """Retrieve a quiz from the database by quiz ID"""
         session = self.Session()
         try:
-            quiz = session.query(Quiz).filter_by(id=quiz_id).one()
+            quiz = session.query(QuizModel).filter_by(id=quiz_id).one()
             return quiz
         except NoResultFound:
             raise NoResultFound(f"No quiz found with id {quiz_id}")
@@ -161,7 +161,7 @@ class DB:
         """Retrieve all quizzes from the database"""
         session = self.Session()
         try:
-            quizzes = session.query(Quiz).all()
+            quizzes = session.query(QuizModel).all()
             return quizzes
         finally:
             session.close()
@@ -170,35 +170,35 @@ class DB:
         """Retrieve quizzes created by a specific user"""
         session = self.Session()
         try:
-            quizzes = session.query(Quiz).filter_by(user_id=user_id).all()
+            quizzes = session.query(QuizModel).filter_by(user_id=user_id).all()
             return quizzes
         finally:
             session.close()
 
-    def add_question_to_quiz(self, quiz_id, question_data):
-        """Add a new question to an existing quiz"""
+    def add_QuestionModel_to_quiz(self, quiz_id, QuestionModel_data):
+        """Add a new QuestionModel to an existing quiz"""
         session = self.Session()
         try:
-            quiz = session.query(Quiz).filter_by(id=quiz_id).one()
-            new_question = Question(**question_data)
-            quiz.questions.append(new_question)
+            quiz = session.query(QuizModel).filter_by(id=quiz_id).one()
+            new_QuestionModel = QuestionModel(**QuestionModel_data)
+            quiz.QuestionModels.append(new_QuestionModel)
             session.commit()
-            return new_question
+            return new_QuestionModel
         except NoResultFound:
             raise NoResultFound(f"No quiz found with id {quiz_id}")
         finally:
             session.close()
 
-    def remove_question_from_quiz(self, quiz_id, question_id):
-        """Remove a question from a quiz"""
+    def remove_QuestionModel_from_quiz(self, quiz_id, QuestionModel_id):
+        """Remove a QuestionModel from a quiz"""
         session = self.Session()
         try:
-            quiz = session.query(Quiz).filter_by(id=quiz_id).one()
-            question = session.query(Question).filter_by(id=question_id).one()
-            quiz.questions.remove(question)
+            quiz = session.query(QuizModel).filter_by(id=quiz_id).one()
+            QuestionModel = session.query(QuestionModel).filter_by(id=QuestionModel_id).one()
+            quiz.QuestionModels.remove(QuestionModel)
             session.commit()
         except NoResultFound:
-            raise NoResultFound("No quiz or question found with the provided IDs")
+            raise NoResultFound("No quiz or QuestionModel found with the provided IDs")
         finally:
             session.close()
 
@@ -206,7 +206,7 @@ class DB:
         """Record a user's attempt at taking a quiz"""
         session = self.Session()
         try:
-            new_quiz_attempt = QuizAttempt(**quiz_attempt_data)
+            new_quiz_attempt = QuizAttemptModel(**quiz_attempt_data)
             session.add(new_quiz_attempt)
             session.commit()
             return new_quiz_attempt
@@ -217,7 +217,7 @@ class DB:
         """Retrieve all quiz attempts made by a specific user"""
         session = self.Session()
         try:
-            quiz_attempts = session.query(QuizAttempt).filter_by(user_id=user_id).all()
+            quiz_attempts = session.query(QuizAttemptModel).filter_by(user_id=user_id).all()
             return quiz_attempts
         finally:
             session.close()
